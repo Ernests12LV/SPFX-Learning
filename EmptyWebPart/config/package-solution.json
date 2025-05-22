@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "empty-web-part-client-side-solution",
+    "id": "98351934-53ca-45b1-985e-a4ea4e95bed9",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": "Undefined-1.21.1"
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "empty-web-part description"
+      },
+      "longDescription": {
+        "default": "empty-web-part description"
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "empty-web-part Feature",
+        "description": "The feature that activates elements of the empty-web-part solution.",
+        "id": "239b28a8-c197-43e1-ae3d-ab2741e43211",
+        "version": "1.0.0.0"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/empty-web-part.sppkg"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "plusBeta": false,
+    "isCreatingSolution": true,
+    "nodeVersion": "18.20.4",
+    "sdksVersions": {},
+    "version": "1.21.1",
+    "libraryName": "empty-web-part",
+    "libraryId": "98351934-53ca-45b1-985e-a4ea4e95bed9",
+    "environment": "spo",
+    "packageManager": "npm",
+    "solutionName": "empty-web-part",
+    "solutionShortDescription": "empty-web-part description",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "componentType": "webpart"
+  }
+}
