@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "wp-to-read-site-properties-client-side-solution",
+    "id": "957bc06e-b91e-43d8-9441-38507c9acc53",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": "Undefined-1.21.1"
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "wp-to-read-site-properties description"
+      },
+      "longDescription": {
+        "default": "wp-to-read-site-properties description"
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "wp-to-read-site-properties Feature",
+        "description": "The feature that activates elements of the wp-to-read-site-properties solution.",
+        "id": "a2b65768-46db-4704-a56b-97e5a7a349f8",
+        "version": "1.0.0.0"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/wp-to-read-site-properties.sppkg"
+  }
+}

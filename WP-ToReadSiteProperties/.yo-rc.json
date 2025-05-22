@@ -1,0 +1,18 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "plusBeta": false,
+    "isCreatingSolution": true,
+    "nodeVersion": "18.20.4",
+    "sdksVersions": {},
+    "version": "1.21.1",
+    "libraryName": "wp-to-read-site-properties",
+    "libraryId": "957bc06e-b91e-43d8-9441-38507c9acc53",
+    "environment": "spo",
+    "packageManager": "npm",
+    "solutionName": "wp-to-read-site-properties",
+    "solutionShortDescription": "wp-to-read-site-properties description",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "componentType": "webpart"
+  }
+}
