@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "template-webpart-1-20-client-side-solution",
+    "id": "f1b4e967-e6a5-4593-9884-a2ac90ca1e55",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": "Undefined-1.20.0"
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "template-webpart-1-20 description"
+      },
+      "longDescription": {
+        "default": "template-webpart-1-20 description"
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "template-webpart-1-20 Feature",
+        "description": "The feature that activates elements of the template-webpart-1-20 solution.",
+        "id": "77625907-a994-4a51-b3c8-80d9a9eba3b3",
+        "version": "1.0.0.0"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/template-webpart-1-20.sppkg"
+  }
+}
