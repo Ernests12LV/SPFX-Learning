@@ -5,14 +5,14 @@
     "tempalte-120-web-part": {
       "components": [
         {
-          "entrypoint": "./lib/webparts/CultureInfoDetails/CultureInfoDetails.js",
-          "manifest": "./src/webparts/CultureInfoDetails/CultureInfoDetails.manifest.json"
+          "entrypoint": "./lib/webparts/tempalte120/tempalte120WebPart.js",
+          "manifest": "./src/webparts/tempalte120/tempalte120WebPart.manifest.json"
         }
       ]
     }
   },
   "externals": {},
   "localizedResources": {
-    "CultureInfoDetailsStrings": "lib/webparts/CultureInfoDetails/loc/{locale}.js"
+    "Tempalte120WebPartStrings": "lib/webparts/tempalte120/loc/{locale}.js"
   }
 }
