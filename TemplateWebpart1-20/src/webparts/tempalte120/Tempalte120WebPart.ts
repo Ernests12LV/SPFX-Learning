@@ -16,11 +16,15 @@ import { SPHttpClient, SPHttpClientResponse } from "@microsoft/sp-http";
 
 export interface ITempalte120WebPartProps {
   description: string;
+  productName: string;
+  productDescription: string;
+  productCost: number;
+  quantity: number;
 }
 
 export interface ISharePointList {
-  ListTitle: string;
-  ListId: string;
+  Title: string;
+  Id: string;
 }
 
 export interface ISharePointLists {
@@ -53,31 +57,45 @@ export default class Tempalte120WebPart extends BaseClientSideWebPart<ITempalte1
     }
   }
 
-  // private _renderListOfLists(items: ISharePointList[]): void {
-  //   let html: string = "";
-  //   items.forEach((item: ISharePointList) => {
-  //     html += `<li>${item.ListTitle} (${item.ListId})</li>`;
-  //   });
-
-  //   const listsPlaceholder = this.domElement.querySelector('#SPListPlaceholder');
-  //   if (listsPlaceholder) {
-  //     listsPlaceholder.innerHTML = html;
-  //   }
-  // }
-
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = "";
 
+  private calculateBillAmount(): number {
+    const cost = this.properties.productCost || 0;
+    const quantity = this.properties.quantity || 0;
+    return cost * quantity;
+  }
+
+  private calculateDiscount(billAmount: number): number {
+    // Example: 10% discount for bills over 1000
+    return billAmount > 1000 ? billAmount * 0.1 : 0;
+  }
+
+  private calculateNetBillAmount(billAmount: number, discount: number): number {
+    return billAmount - discount;
+  }
+
   public render(): void {
+    const billAmount = this.calculateBillAmount();
+    const discount = this.calculateDiscount(billAmount);
+    const netBillAmount = this.calculateNetBillAmount(billAmount, discount);
+
     const element: React.ReactElement<ITempalte120Props> = React.createElement(
       Tempalte120,
       {
+        productName: this.properties.productName || '',
+        productDescription: this.properties.productDescription || '',
+        productCost: this.properties.productCost || 0,
+        quantity: this.properties.quantity || 0,
+        billAmount: billAmount,
+        discount: discount,
+        netBillAmount: netBillAmount,
         description: this.properties.description,
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
-        lists: this._lists  // Add this line
+        lists: this._lists
       }
     );
 
@@ -168,20 +186,38 @@ export default class Tempalte120WebPart extends BaseClientSideWebPart<ITempalte1
       pages: [
         {
           header: {
-            description: strings.PropertyPaneDescription,
+            description: strings.PropertyPaneDescription
           },
           groups: [
             {
-              groupName: strings.BasicGroupName,
+              groupName: "Product Details",
               groupFields: [
-                PropertyPaneTextField("description", {
-                  label: strings.DescriptionFieldLabel,
+                PropertyPaneTextField('productName', {
+                  label: "Product Name"
                 }),
-              ],
-            },
-          ],
-        },
-      ],
+                PropertyPaneTextField('productDescription', {
+                  label: "Product Description",
+                  multiline: true
+                }),
+                PropertyPaneTextField('productCost', {
+                  label: "Product Cost ($)",
+                  onGetErrorMessage: this.validateNumber
+                }),
+                PropertyPaneTextField('quantity', {
+                  label: "Quantity",
+                  onGetErrorMessage: this.validateNumber
+                })
+              ]
+            }
+          ]
+        }
+      ]
     };
+  }
+
+  private validateNumber(value: string): string {
+    if (value === null || value.trim().length === 0) return '';
+    const number = Number(value);
+    return isNaN(number) || number < 0 ? 'Please enter a valid positive number' : '';
   }
 }

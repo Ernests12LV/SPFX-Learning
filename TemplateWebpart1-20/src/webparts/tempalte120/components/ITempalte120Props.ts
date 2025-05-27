@@ -6,5 +6,14 @@ export interface ITempalte120Props {
   environmentMessage: string;
   hasTeamsContext: boolean;
   userDisplayName: string;
-  lists: ISharePointList[]; // Add this line
+  
+  lists: ISharePointList[];
+
+  productName: string;
+  productDescription: string;
+  productCost: number;
+  quantity: number;
+  billAmount: number;
+  discount: number;
+  netBillAmount: number;
 }
