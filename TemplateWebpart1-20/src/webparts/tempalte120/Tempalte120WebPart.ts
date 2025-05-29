@@ -4,6 +4,7 @@ import { Environment, EnvironmentType, Version } from "@microsoft/sp-core-librar
 import {
   type IPropertyPaneConfiguration,
   PropertyPaneTextField,
+  PropertyPaneToggle
 } from "@microsoft/sp-property-pane";
 import { BaseClientSideWebPart } from "@microsoft/sp-webpart-base";
 import { IReadonlyTheme } from "@microsoft/sp-component-base";
@@ -20,6 +21,7 @@ export interface ITempalte120WebPartProps {
   productDescription: string;
   productCost: number;
   quantity: number;
+  isCertified: boolean;
 }
 
 export interface ISharePointList {
@@ -95,7 +97,8 @@ export default class Tempalte120WebPart extends BaseClientSideWebPart<ITempalte1
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
-        lists: this._lists
+        lists: this._lists,
+        isCertified: this.properties.isCertified
       }
     );
 
@@ -103,6 +106,11 @@ export default class Tempalte120WebPart extends BaseClientSideWebPart<ITempalte1
   }
 
   protected onInit(): Promise<void> {
+    this.properties.productName = 'initial product name';
+    this.properties.productDescription = 'initial product description';
+    this.properties.productCost = 69;
+    this.properties.quantity = 69;
+
     return Promise.all([
       this._getEnvironmentMessage().then((message) => {
         this._environmentMessage = message;
@@ -111,6 +119,10 @@ export default class Tempalte120WebPart extends BaseClientSideWebPart<ITempalte1
     ]).then(() => {
       return Promise.resolve();
     });
+  }
+
+  protected get disableReactivePropertyChanges(): boolean {
+    return true;
   }
 
   private _getEnvironmentMessage(): Promise<string> {
@@ -206,6 +218,11 @@ export default class Tempalte120WebPart extends BaseClientSideWebPart<ITempalte1
                 PropertyPaneTextField('quantity', {
                   label: "Quantity",
                   onGetErrorMessage: this.validateNumber
+                }),
+                PropertyPaneToggle('isCertified', {
+                  label: "Is Product Certified",
+                  onText: "Yes",
+                  offText: "No"
                 })
               ]
             }

@@ -19,6 +19,7 @@ export default class Tempalte120 extends React.Component<ITempalte120Props> {
       hasTeamsContext,
       userDisplayName,
       lists,
+      isCertified,
     } = this.props;
 
     return (
@@ -72,6 +73,10 @@ export default class Tempalte120 extends React.Component<ITempalte120Props> {
           <div>
             <label>Net Bill Amount:</label>
             <span>${netBillAmount}</span>
+          </div>
+          <div>
+            <label>Certification Status:</label>
+            <span>{isCertified ? "Certified" : "Not Certified"}</span>
           </div>
         </div>
         <div>

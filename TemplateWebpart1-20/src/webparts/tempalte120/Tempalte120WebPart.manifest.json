@@ -22,7 +22,12 @@
     "description": { "default": "tempalte-1-20 description" },
     "officeFabricIconFontName": "Page",
     "properties": {
-      "description": "tempalte-1-20"
+      "description": "tempalte-1-20",
+      "productName": "Sample Product from Manifest",
+      "productDescription": "This is a sample product description",
+      "productCost": 100,
+      "quantity": 1,
+      "isCertified": false
     }
   }]
 }

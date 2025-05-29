@@ -16,4 +16,5 @@ export interface ITempalte120Props {
   billAmount: number;
   discount: number;
   netBillAmount: number;
+  isCertified: boolean;
 }
