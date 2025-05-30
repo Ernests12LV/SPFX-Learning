@@ -20,6 +20,12 @@ export default class Tempalte120 extends React.Component<ITempalte120Props> {
       userDisplayName,
       lists,
       isCertified,
+      rating,
+      category,
+      deliveryOption,
+      features,
+      paymentMethod,
+      colorScheme,
     } = this.props;
 
     return (
@@ -77,6 +83,30 @@ export default class Tempalte120 extends React.Component<ITempalte120Props> {
           <div>
             <label>Certification Status:</label>
             <span>{isCertified ? "Certified" : "Not Certified"}</span>
+          </div>
+          <div>
+            <label>Product Rating:</label>
+            <span>{rating}/10</span>
+          </div>
+          <div>
+            <label>Category:</label>
+            <span>{category.charAt(0).toUpperCase() + category.slice(1)}</span>
+          </div>
+          <div>
+            <label>Delivery Option:</label>
+            <span>{deliveryOption}</span>
+          </div>
+          <div>
+            <label>Selected Features:</label>
+            <span>{features.join(", ")}</span>
+          </div>
+          <div>
+            <label>Payment Method:</label>
+            <span>{paymentMethod}</span>
+          </div>
+          <div>
+            <label>Color Scheme:</label>
+            <span>{colorScheme}</span>
           </div>
         </div>
         <div>

@@ -17,4 +17,11 @@ export interface ITempalte120Props {
   discount: number;
   netBillAmount: number;
   isCertified: boolean;
+  rating: number;
+  category: string;
+
+  deliveryOption: string;
+  features: string[];
+  paymentMethod: string;
+  colorScheme: string;
 }

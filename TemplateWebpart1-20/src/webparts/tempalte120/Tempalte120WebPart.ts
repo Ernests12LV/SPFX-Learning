@@ -4,7 +4,11 @@ import { Environment, EnvironmentType, Version } from "@microsoft/sp-core-librar
 import {
   type IPropertyPaneConfiguration,
   PropertyPaneTextField,
-  PropertyPaneToggle
+  PropertyPaneToggle,
+  PropertyPaneSlider,
+  PropertyPaneChoiceGroup,
+  PropertyPaneDropdown,
+  PropertyPaneCheckbox
 } from "@microsoft/sp-property-pane";
 import { BaseClientSideWebPart } from "@microsoft/sp-webpart-base";
 import { IReadonlyTheme } from "@microsoft/sp-component-base";
@@ -22,6 +26,11 @@ export interface ITempalte120WebPartProps {
   productCost: number;
   quantity: number;
   isCertified: boolean;
+  category: string;
+  deliveryOption: string;
+  features: string[];
+  paymentMethod: string;
+  colorScheme: string;
 }
 
 export interface ISharePointList {
@@ -98,7 +107,13 @@ export default class Tempalte120WebPart extends BaseClientSideWebPart<ITempalte1
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
         lists: this._lists,
-        isCertified: this.properties.isCertified
+        isCertified: this.properties.isCertified,
+        rating: (this.properties as any).rating || 0,
+        category: this.properties.category || 'electronics',
+        deliveryOption: this.properties.deliveryOption || '',
+        features: this.properties.features || [],
+        paymentMethod: this.properties.paymentMethod || '',
+        colorScheme: this.properties.colorScheme || ''
       }
     );
 
@@ -223,7 +238,67 @@ export default class Tempalte120WebPart extends BaseClientSideWebPart<ITempalte1
                   label: "Is Product Certified",
                   onText: "Yes",
                   offText: "No"
+                }),
+                PropertyPaneSlider('rating', {
+                  label: "Product Rating",
+                  min: 0,
+                  max: 10,
+                  step: 1,
+                  showValue: true
+                }),
+                PropertyPaneChoiceGroup('category', {
+                  label: "Product Category",
+                  options: [
+                    { key: 'electronics', text: 'Electronics' },
+                    { key: 'clothing', text: 'Clothing' },
+                    { key: 'books', text: 'Books' }
+                  ]
                 })
+              ]
+            },
+            {
+              groupName: "Additional Options",
+              groupFields: [
+                PropertyPaneChoiceGroup('deliveryOption', {
+                  label: "Delivery Method",
+                  options: [
+                    {
+                      key: 'standard',
+                      text: 'Standard Delivery',
+                      iconProps: {
+                        officeFabricIconFontName: 'Mail'
+                      }
+                    },
+                    {
+                      key: 'express',
+                      text: 'Express Delivery',
+                      iconProps: {
+                        officeFabricIconFontName: 'MailAlert'
+                      }
+                    }
+                  ]
+                }),
+                PropertyPaneDropdown('paymentMethod', {
+                  label: "Payment Method",
+                  options: [
+                    { key: 'credit', text: 'Credit Card' },
+                    { key: 'debit', text: 'Debit Card' },
+                    { key: 'paypal', text: 'PayPal' },
+                    { key: 'crypto', text: 'Cryptocurrency' }
+                  ]
+                }),
+                PropertyPaneChoiceGroup('colorScheme', {
+                  label: "Color Scheme",
+                  options: [
+                    { key: 'light', text: 'Light' },
+                    { key: 'dark', text: 'Dark' },
+                    { key: 'custom', text: 'Custom' }
+                  ]
+                }),
+                PropertyPaneCheckbox('features', {
+                  text: 'Add Insurance',
+                  checked: false
+                }),
               ]
             }
           ]

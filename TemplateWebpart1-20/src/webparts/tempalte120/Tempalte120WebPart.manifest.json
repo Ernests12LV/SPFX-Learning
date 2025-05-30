@@ -27,7 +27,13 @@
       "productDescription": "This is a sample product description",
       "productCost": 100,
       "quantity": 1,
-      "isCertified": false
+      "isCertified": false,
+      "rating": 5,
+      "category": "electronics",
+      "deliveryOption": "standard",
+      "features": [],
+      "paymentMethod": "credit",
+      "colorScheme": "light"
     }
   }]
 }
