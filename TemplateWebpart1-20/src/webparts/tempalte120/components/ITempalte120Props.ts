@@ -24,4 +24,7 @@ export interface ITempalte120Props {
   features: string[];
   paymentMethod: string;
   colorScheme: string;
+
+  listName: string;
+  listDescription: string;
 }

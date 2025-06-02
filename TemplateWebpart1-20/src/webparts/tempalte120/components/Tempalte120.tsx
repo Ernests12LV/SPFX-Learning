@@ -26,6 +26,8 @@ export default class Tempalte120 extends React.Component<ITempalte120Props> {
       features,
       paymentMethod,
       colorScheme,
+      listName,
+      listDescription,
     } = this.props;
 
     return (
@@ -118,6 +120,17 @@ export default class Tempalte120 extends React.Component<ITempalte120Props> {
               </li>
             ))}
           </ul>
+        </div>
+        <div className={styles.listManagement}>
+          <h3>List Management</h3>
+          <div>
+            <label>List Name:</label>
+            <span>{listName}</span>
+          </div>
+          <div>
+            <label>Description:</label>
+            <span>{listDescription}</span>
+          </div>
         </div>
       </section>
     );

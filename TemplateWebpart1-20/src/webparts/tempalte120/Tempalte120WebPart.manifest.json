@@ -20,7 +20,7 @@
     "group": { "default": "Advanced" },
     "title": { "default": "tempalte-1-20" },
     "description": { "default": "tempalte-1-20 description" },
-    "officeFabricIconFontName": "Page",
+    "officeFabricIconFontName": "PinSolid12",
     "properties": {
       "description": "tempalte-1-20",
       "productName": "Sample Product from Manifest",
@@ -37,3 +37,6 @@
     }
   }]
 }
+
+// for coustom image replace officeFabricIconFontName with 
+// "iconImageUrl": "https://contoso.com/path/to/icon.png"
