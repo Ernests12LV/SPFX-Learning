@@ -27,7 +27,7 @@ export default class Tempalte120 extends React.Component<ITempalte120Props> {
       paymentMethod,
       colorScheme,
       listName,
-      listDescription,
+      listDescription
     } = this.props;
 
     return (

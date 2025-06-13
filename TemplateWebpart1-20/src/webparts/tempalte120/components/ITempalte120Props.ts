@@ -27,4 +27,8 @@ export interface ITempalte120Props {
 
   listName: string;
   listDescription: string;
+  itemTitle: string;
+  itemId: string;
+  listTitle: string;
+  listTeam: string;
 }

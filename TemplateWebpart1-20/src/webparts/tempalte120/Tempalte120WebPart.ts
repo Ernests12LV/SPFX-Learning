@@ -8,7 +8,9 @@ import {
   PropertyPaneSlider,
   PropertyPaneChoiceGroup,
   PropertyPaneDropdown,
-  PropertyPaneCheckbox
+  PropertyPaneCheckbox,
+  PropertyPaneButton,
+  PropertyPaneButtonType
 } from "@microsoft/sp-property-pane";
 import { BaseClientSideWebPart } from "@microsoft/sp-webpart-base";
 import { IReadonlyTheme } from "@microsoft/sp-component-base";
@@ -17,7 +19,7 @@ import * as strings from "Tempalte120WebPartStrings";
 import Tempalte120 from "./components/Tempalte120";
 import { ITempalte120Props } from "./components/ITempalte120Props";
 
-import { SPHttpClient, SPHttpClientResponse } from "@microsoft/sp-http";
+import { SPHttpClient, SPHttpClientResponse } from "@microsoft/sp-http"; //ISPHttpClientOptions
 
 export interface ITempalte120WebPartProps {
   description: string;
@@ -31,6 +33,12 @@ export interface ITempalte120WebPartProps {
   features: string[];
   paymentMethod: string;
   colorScheme: string;
+  listName: string;
+  listDescription: string;
+  itemTitle: string;
+  itemId: string;
+  listTitle: string;
+  listTeam: string;
 }
 
 export interface ISharePointList {
@@ -113,7 +121,13 @@ export default class Tempalte120WebPart extends BaseClientSideWebPart<ITempalte1
         deliveryOption: this.properties.deliveryOption || '',
         features: this.properties.features || [],
         paymentMethod: this.properties.paymentMethod || '',
-        colorScheme: this.properties.colorScheme || ''
+        colorScheme: this.properties.colorScheme || '',
+        listName: this.properties.listName || '',
+        listDescription: this.properties.listDescription || '',
+        itemTitle: this.properties.itemTitle || '',
+        listTitle: this.properties.listTitle || '',
+        listTeam: this.properties.listTeam || '',
+        itemId: this.properties.itemId || ''
       }
     );
 
@@ -213,11 +227,13 @@ export default class Tempalte120WebPart extends BaseClientSideWebPart<ITempalte1
       pages: [
         {
           header: {
-            description: strings.PropertyPaneDescription
+            description: "Basic Settings"
           },
+          displayGroupsAsAccordion: true,
           groups: [
             {
-              groupName: "Product Details",
+              groupName: "Basic Product Information",
+              isCollapsed: false,
               groupFields: [
                 PropertyPaneTextField('productName', {
                   label: "Product Name"
@@ -225,7 +241,13 @@ export default class Tempalte120WebPart extends BaseClientSideWebPart<ITempalte1
                 PropertyPaneTextField('productDescription', {
                   label: "Product Description",
                   multiline: true
-                }),
+                })
+              ]
+            },
+            {
+              groupName: "Pricing Details",
+              isCollapsed: true,
+              groupFields: [
                 PropertyPaneTextField('productCost', {
                   label: "Product Cost ($)",
                   onGetErrorMessage: this.validateNumber
@@ -233,7 +255,13 @@ export default class Tempalte120WebPart extends BaseClientSideWebPart<ITempalte1
                 PropertyPaneTextField('quantity', {
                   label: "Quantity",
                   onGetErrorMessage: this.validateNumber
-                }),
+                })
+              ]
+            },
+            {
+              groupName: "Product Classifications",
+              isCollapsed: true,
+              groupFields: [
                 PropertyPaneToggle('isCertified', {
                   label: "Is Product Certified",
                   onText: "Yes",
@@ -245,7 +273,21 @@ export default class Tempalte120WebPart extends BaseClientSideWebPart<ITempalte1
                   max: 10,
                   step: 1,
                   showValue: true
-                }),
+                })
+              ]
+            }
+          ]
+        },
+        {
+          header: {
+            description: "Advanced Settings"
+          },
+          displayGroupsAsAccordion: true,
+          groups: [
+            {
+              groupName: "Categories & Features",
+              isCollapsed: false,
+              groupFields: [
                 PropertyPaneChoiceGroup('category', {
                   label: "Product Category",
                   options: [
@@ -257,7 +299,8 @@ export default class Tempalte120WebPart extends BaseClientSideWebPart<ITempalte1
               ]
             },
             {
-              groupName: "Additional Options",
+              groupName: "Shipping & Delivery",
+              isCollapsed: true,
               groupFields: [
                 PropertyPaneChoiceGroup('deliveryOption', {
                   label: "Delivery Method",
@@ -265,19 +308,25 @@ export default class Tempalte120WebPart extends BaseClientSideWebPart<ITempalte1
                     {
                       key: 'standard',
                       text: 'Standard Delivery',
-                      iconProps: {
-                        officeFabricIconFontName: 'Mail'
-                      }
+                      iconProps: { officeFabricIconFontName: 'Mail' }
                     },
                     {
                       key: 'express',
                       text: 'Express Delivery',
-                      iconProps: {
-                        officeFabricIconFontName: 'MailAlert'
-                      }
+                      iconProps: { officeFabricIconFontName: 'MailAlert' }
                     }
                   ]
                 }),
+                PropertyPaneCheckbox('features', {
+                  text: 'Add Insurance',
+                  checked: false
+                })
+              ]
+            },
+            {
+              groupName: "Payment & Appearance",
+              isCollapsed: true,
+              groupFields: [
                 PropertyPaneDropdown('paymentMethod', {
                   label: "Payment Method",
                   options: [
@@ -294,11 +343,158 @@ export default class Tempalte120WebPart extends BaseClientSideWebPart<ITempalte1
                     { key: 'dark', text: 'Dark' },
                     { key: 'custom', text: 'Custom' }
                   ]
+                })
+              ]
+            }
+          ],
+        },
+        {
+          header: {
+            description: "List Management"
+          },
+          groups: [
+            {
+              groupName: "Create New List",
+              groupFields: [
+                PropertyPaneTextField('listName', {
+                  label: "List Name"
                 }),
-                PropertyPaneCheckbox('features', {
-                  text: 'Add Insurance',
-                  checked: false
+                PropertyPaneTextField('listDescription', {
+                  label: "List Description",
+                  multiline: true
                 }),
+                PropertyPaneButton('createList', {
+                  text: "Create List",
+                  buttonType: PropertyPaneButtonType.Primary,
+                  onClick: () => {
+                    if (!this.properties.listName) {
+                      alert('Please enter a list name');
+                      return;
+                    }
+                    
+                    this._checkIfListExists(this.properties.listName)
+                      .then((exists: boolean) => {
+                        if (exists) {
+                          alert(`List "${this.properties.listName}" already exists!`);
+                        } else {
+                          this._createList(
+                            this.properties.listName,
+                            this.properties.listDescription || ''
+                          );
+                        }
+                      });
+                  }
+                })
+              ]
+            },
+            {
+              groupName: "Subbit Item to List",
+              groupFields: [
+                PropertyPaneTextField('listTitle', {
+                  label: "Name"
+                }),
+                PropertyPaneTextField('listTeam', {
+                  label: "Item Title",
+                  multiline: true
+                }),
+                PropertyPaneButton('submitItem', {
+                  text: "Submit",
+                  buttonType: PropertyPaneButtonType.Primary,
+                  onClick: () => {
+                    if (!this.properties.listName || !this.properties.listTitle) {
+                      alert('Please enter both list name and item title');
+                      return;
+                    }
+
+                    this._checkIfListExists(this.properties.listName)
+                      .then((exists: boolean) => {
+                        if (!exists) {
+                          alert(`List "${this.properties.listName}" not found!`);
+                        } else {
+                          this._addItemToList(
+                            this.properties.listName,
+                            this.properties.listTitle
+                          );
+                        }
+                      });
+                  }
+                })
+              ]
+            }
+          ]
+        },
+        {
+          header: {
+            description: "List Operations"
+          },
+          groups: [
+            {
+              groupName: "Operations",
+              groupFields: [
+                PropertyPaneTextField('itemId', {
+                  label: "Item ID"
+                }),
+                PropertyPaneButton('getAllItems', {
+                  text: "Get All Items",
+                  buttonType: PropertyPaneButtonType.Primary,
+                  onClick: () => {
+                    if (!this.properties.listName) {
+                      alert('Please enter a list name');
+                      return;
+                    }
+                    this._getAllItems(this.properties.listName)
+                      .then(items => {
+                        console.log('All Items:', items);
+                        alert(`Found ${items.length} items. Check console for details.`);
+                      })
+                      .catch(error => alert(error.message));
+                  }
+                }),
+                PropertyPaneButton('getItem', {
+                  text: "Get Item by ID",
+                  buttonType: PropertyPaneButtonType.Primary,
+                  onClick: () => {
+                    if (!this.properties.listName || !this.properties.itemId) {
+                      alert('Please enter both list name and item ID');
+                      return;
+                    }
+                    this._getItemById(this.properties.listName, parseInt(this.properties.itemId))
+                      .then(item => {
+                        console.log('Item:', item);
+                        alert(`Item found. Check console for details.`);
+                      })
+                      .catch(error => alert(error.message));
+                  }
+                }),
+                PropertyPaneButton('updateItem', {
+                  text: "Update Item",
+                  buttonType: PropertyPaneButtonType.Primary,
+                  onClick: () => {
+                    if (!this.properties.listName || !this.properties.itemId) {
+                      alert('Please enter both list name and item ID');
+                      return;
+                    }
+                    const updates = {
+                      Title: `Updated Title ${new Date().toISOString()}`
+                    };
+                    this._updateListItem(this.properties.listName, parseInt(this.properties.itemId), updates)
+                      .catch(error => alert(error.message));
+                  }
+                }),
+                PropertyPaneButton('deleteItem', {
+                  text: "Delete Item",
+                  buttonType: PropertyPaneButtonType.Primary,
+                  onClick: () => {
+                    if (!this.properties.listName || !this.properties.itemId) {
+                      alert('Please enter both list name and item ID');
+                      return;
+                    }
+                    if (confirm('Are you sure you want to delete this item?')) {
+                      this._deleteListItem(this.properties.listName, parseInt(this.properties.itemId))
+                        .catch(error => alert(error.message));
+                    }
+                  }
+                })
               ]
             }
           ]
@@ -311,5 +507,222 @@ export default class Tempalte120WebPart extends BaseClientSideWebPart<ITempalte1
     if (value === null || value.trim().length === 0) return '';
     const number = Number(value);
     return isNaN(number) || number < 0 ? 'Please enter a valid positive number' : '';
+  }
+
+  private _createList(listName: string, listDescription: string): Promise<void> {
+    const listUrl: string = `${this.context.pageContext.web.absoluteUrl}/_api/web/lists`;
+
+    const body: string = JSON.stringify({
+      '__metadata': { 'type': 'SP.List' },
+      'BaseTemplate': 100,
+      'Title': listName,
+      'Description': listDescription,
+      'AllowContentTypes': true,
+      'ContentTypesEnabled': true
+    });
+
+    return this.context.spHttpClient.post(
+      listUrl,
+      SPHttpClient.configurations.v1,
+      {
+        headers: {
+          'Accept': 'application/json;odata=verbose',
+          'Content-type': 'application/json;odata=verbose',
+          'Odata-Version': '3.0'
+        },
+        body: body
+      })
+      .then((response: SPHttpClientResponse) => {
+        if (response.ok) {
+          return response.json().then(() => {
+            alert(`List "${listName}" created successfully!`);
+            return this._getAndRenderLists();
+          });
+        } else {
+          return response.json().then((error) => {
+            console.error('Error details:', error);
+            alert(`Error creating list: ${error.error.message.value}`);
+          });
+        }
+      })
+      .catch((error: any) => {
+        console.error('Error:', error);
+        alert(`Error: ${error.message}`);
+      });
+  }
+
+private _addItemToList(listName: string, itemTitle: string): Promise<void> {
+  const endpoint: string = `${this.context.pageContext.web.absoluteUrl}/_api/web/lists/GetByTitle('${listName}')/items`;
+
+  const body: string = JSON.stringify({
+    '__metadata': { 
+      'type': `SP.Data.${listName.replace(/\s/g, '_x0020_')}ListItem` 
+    },
+    'Title': itemTitle
+  });
+
+  return this.context.spHttpClient.post(
+    endpoint,
+    SPHttpClient.configurations.v1,
+    {
+      headers: {
+        'Accept': 'application/json;odata=verbose',
+        'Content-type': 'application/json;odata=verbose',
+        'OData-Version': '3.0'
+      },
+      body: body
+    }
+  )
+  .then((response: SPHttpClientResponse) => {
+    if (response.ok) {
+      alert(`Item "${itemTitle}" added successfully!`);
+      return;
+    }
+    throw new Error(`Error adding item: ${response.statusText}`);
+  })
+  .catch((error: any) => {
+    console.error('Error:', error);
+    alert(`Error: ${error.message}`);
+  });
+}
+
+  // private _createSubSite(subSiteTitle: string, subSiteUrl: string, subSiteDescriptin: string):void {
+    
+  //   const url: string = this.context.pageContext.web.absoluteUrl + "/_api/web/webinfos/add";
+
+  //   const spHttpClientOptions: ISPHttpClientOptions = {
+  //     body:`{
+  //       "parameters":{
+  //         "@odata.type": "SP.webInfoCreationInformation",
+  //         "Title": "${subSiteTitle}",
+  //         "Url": "${subSiteUrl}",
+  //         "Description": "${subSiteDescriptin}",
+  //         "Language": 1033,
+  //         "WebTemplate": "STS#0",
+  //         "UseUniquePermissions": false
+  //       }
+  //     }`
+  //   };
+
+  //   this.context.spHttpClient.post(url, SPHttpClient.configurations.v1, spHttpClientOptions)
+  //   .then((response: SPHttpClientResponse) => {
+  //     if(response.status == 200){
+  //       alert("New sub site created!");
+  //     }
+  //     else {
+  //       alert("Error :" + response.status + "-" + response.statusText);
+  //     }
+  //   })
+
+  // }
+
+  private _checkIfListExists(listName: string): Promise<boolean> {
+    return this.context.spHttpClient.get(
+      this.context.pageContext.web.absoluteUrl + 
+      `/_api/web/lists/GetByTitle('${listName}')`,
+      SPHttpClient.configurations.v1
+    )
+    .then((response: SPHttpClientResponse) => {
+      return response.ok;
+    });
+  }
+
+  private _getAllItems(listName: string): Promise<any[]> {
+    const endpoint: string = `${this.context.pageContext.web.absoluteUrl}/_api/web/lists/GetByTitle('${listName}')/items`;
+    
+    return this.context.spHttpClient.get(
+      endpoint,
+      SPHttpClient.configurations.v1,
+      {
+        headers: {
+          'Accept': 'application/json;odata=verbose',
+          'Content-type': 'application/json;odata=verbose'
+        }
+      }
+    )
+    .then((response: SPHttpClientResponse) => {
+      if (response.ok) {
+        return response.json().then(data => data.d.results);
+      } else {
+        throw new Error(`Error getting items: ${response.statusText}`);
+      }
+    });
+  }
+
+  private _getItemById(listName: string, itemId: number): Promise<any> {
+    const endpoint: string = `${this.context.pageContext.web.absoluteUrl}/_api/web/lists/GetByTitle('${listName}')/items(${itemId})`;
+    
+    return this.context.spHttpClient.get(
+      endpoint,
+      SPHttpClient.configurations.v1,
+      {
+        headers: {
+          'Accept': 'application/json;odata=verbose'
+        }
+      }
+    )
+    .then((response: SPHttpClientResponse) => {
+      if (response.ok) {
+        return response.json().then(data => data.d);
+      } else {
+        throw new Error(`Error getting item: ${response.statusText}`);
+      }
+    });
+  }
+
+  private _updateListItem(listName: string, itemId: number, updates: any): Promise<void> {
+    const endpoint: string = `${this.context.pageContext.web.absoluteUrl}/_api/web/lists/GetByTitle('${listName}')/items(${itemId})`;
+    
+    const body: string = JSON.stringify({
+      '__metadata': { 
+        'type': `SP.Data.${listName.replace(/\s/g, '_x0020_')}ListItem`
+      },
+      ...updates
+    });
+
+    return this.context.spHttpClient.post(
+      endpoint,
+      SPHttpClient.configurations.v1,
+      {
+        headers: {
+          'Accept': 'application/json;odata=verbose',
+          'Content-type': 'application/json;odata=verbose',
+          'X-HTTP-Method': 'MERGE',
+          'IF-MATCH': '*'
+        },
+        body: body
+      }
+    )
+    .then((response: SPHttpClientResponse) => {
+      if (response.ok) {
+        alert(`Item updated successfully!`);
+      } else {
+        throw new Error(`Error updating item: ${response.statusText}`);
+      }
+    });
+  }
+
+  private _deleteListItem(listName: string, itemId: number): Promise<void> {
+    const endpoint: string = `${this.context.pageContext.web.absoluteUrl}/_api/web/lists/GetByTitle('${listName}')/items(${itemId})`;
+    
+    return this.context.spHttpClient.post(
+      endpoint,
+      SPHttpClient.configurations.v1,
+      {
+        headers: {
+          'Accept': 'application/json;odata=verbose',
+          'Content-type': 'application/json;odata=verbose',
+          'X-HTTP-Method': 'DELETE',
+          'IF-MATCH': '*'
+        }
+      }
+    )
+    .then((response: SPHttpClientResponse) => {
+      if (response.ok) {
+        alert(`Item deleted successfully!`);
+      } else {
+        throw new Error(`Error deleting item: ${response.statusText}`);
+      }
+    });
   }
 }
