@@ -1,7 +1,7 @@
 import * as React from "react";
 import styles from "./Tempalte120.module.scss";
 import type { ITempalte120Props } from "./ITempalte120Props";
-import { escape } from "@microsoft/sp-lodash-subset";
+import AccordionTemplate from "../AccordionTemplate";
 
 export default class Tempalte120 extends React.Component<ITempalte120Props> {
   public render(): React.ReactElement<ITempalte120Props> {
@@ -13,11 +13,7 @@ export default class Tempalte120 extends React.Component<ITempalte120Props> {
       billAmount,
       discount,
       netBillAmount,
-      description,
-      isDarkTheme,
-      environmentMessage,
       hasTeamsContext,
-      userDisplayName,
       lists,
       isCertified,
       rating,
@@ -36,7 +32,7 @@ export default class Tempalte120 extends React.Component<ITempalte120Props> {
           hasTeamsContext ? styles.teams : ""
         }`}
       >
-        <div className={styles.welcome}>
+        {/* <div className={styles.welcome}>
           <img
             alt=""
             src={
@@ -51,7 +47,7 @@ export default class Tempalte120 extends React.Component<ITempalte120Props> {
           <div>
             Web part property value: <strong>{escape(description)}</strong>
           </div>
-        </div>
+        </div> */}
         <div className={styles.productDetails}>
           <h3>Product Details</h3>
           <div>
@@ -132,6 +128,71 @@ export default class Tempalte120 extends React.Component<ITempalte120Props> {
             <span>{listDescription}</span>
           </div>
         </div>
+        <AccordionTemplate 
+          sections={[
+            {
+              title: "Product Information",
+              content: (
+                <div>
+                  <div>
+                    <label>Product Name:</label>
+                    <span>{productName}</span>
+                  </div>
+                  <div>
+                    <label>Description:</label>
+                    <span>{productDescription}</span>
+                  </div>
+                  <div>
+                    <label>Cost:</label>
+                    <span>${productCost}</span>
+                  </div>
+                  <div>
+                    <label>Quantity:</label>
+                    <span>{quantity}</span>
+                  </div>
+                </div>
+              )
+            },
+            {
+              title: "Billing Details",
+              content: (
+                <div>
+                  <div>
+                    <label>Bill Amount:</label>
+                    <span>${billAmount}</span>
+                  </div>
+                  <div>
+                    <label>Discount:</label>
+                    <span>${discount}</span>
+                  </div>
+                  <div>
+                    <label>Net Bill Amount:</label>
+                    <span>${netBillAmount}</span>
+                  </div>
+                </div>
+              )
+            },
+            {
+              title: "Additional Information",
+              content: (
+                <div>
+                  <div>
+                    <label>Certification Status:</label>
+                    <span>{isCertified ? "Certified" : "Not Certified"}</span>
+                  </div>
+                  <div>
+                    <label>Product Rating:</label>
+                    <span>{rating}/10</span>
+                  </div>
+                  <div>
+                    <label>Category:</label>
+                    <span>{category.charAt(0).toUpperCase() + category.slice(1)}</span>
+                  </div>
+                </div>
+              )
+            }
+          ]}
+        />
       </section>
     );
   }

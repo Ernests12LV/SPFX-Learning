@@ -83,3 +83,40 @@
     }
   }
 }
+
+.accordion {
+  margin: 20px 0;
+  border: 1px solid #edebe9;
+  border-radius: 2px;
+}
+
+.accordionSection {
+  border-bottom: 1px solid #edebe9;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.accordionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: #f3f2f1;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.accordionTitle {
+  flex: 1;
+}
+
+.accordionIcon {
+  margin-left: 8px;
+}
+
+.accordionContent {
+  padding: 16px;
+  background: white;
+}
