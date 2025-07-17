@@ -1,0 +1,18 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "plusBeta": false,
+    "isCreatingSolution": true,
+    "nodeVersion": "18.20.4",
+    "sdksVersions": {},
+    "version": "1.21.1",
+    "libraryName": "graph-api-demo",
+    "libraryId": "a4ecde36-0199-4fb3-a7ec-3353a5adce6f",
+    "environment": "spo",
+    "packageManager": "npm",
+    "solutionName": "graph-api-demo",
+    "solutionShortDescription": "graph-api-demo description",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "componentType": "webpart"
+  }
+}
