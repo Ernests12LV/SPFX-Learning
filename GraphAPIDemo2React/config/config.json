@@ -1,0 +1,18 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "graph-api-demo-2-react-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/graphApiDemo2React/GraphApiDemo2ReactWebPart.js",
+          "manifest": "./src/webparts/graphApiDemo2React/GraphApiDemo2ReactWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "GraphApiDemo2ReactWebPartStrings": "lib/webparts/graphApiDemo2React/loc/{locale}.js"
+  }
+}

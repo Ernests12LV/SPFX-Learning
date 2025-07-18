@@ -1,0 +1,18 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "plusBeta": false,
+    "isCreatingSolution": true,
+    "nodeVersion": "18.20.4",
+    "sdksVersions": {},
+    "version": "1.21.1",
+    "libraryName": "graphapidemo-2-react",
+    "libraryId": "c55ff236-ee81-4780-8ba7-1c2024a62920",
+    "environment": "spo",
+    "packageManager": "npm",
+    "solutionName": "graphapidemo2react",
+    "solutionShortDescription": "graphapidemo2react description",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "componentType": "webpart"
+  }
+}

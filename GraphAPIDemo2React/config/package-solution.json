@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "graphapidemo-2-react-client-side-solution",
+    "id": "c55ff236-ee81-4780-8ba7-1c2024a62920",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": "Undefined-1.21.1"
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "graphapidemo2react description"
+      },
+      "longDescription": {
+        "default": "graphapidemo2react description"
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "graphapidemo-2-react Feature",
+        "description": "The feature that activates elements of the graphapidemo-2-react solution.",
+        "id": "477f3d51-d75f-47f7-ab32-52d4de9716bd",
+        "version": "1.0.0.0"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/graphapidemo-2-react.sppkg"
+  }
+}
