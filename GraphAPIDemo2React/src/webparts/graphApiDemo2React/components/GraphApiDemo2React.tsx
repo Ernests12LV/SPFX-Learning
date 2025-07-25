@@ -2,8 +2,6 @@ import * as React from 'react';
 import styles from './GraphApiDemo2React.module.scss';
 import type { IGraphApiDemo2ReactProps } from './IGraphApiDemo2ReactProps';
 import { escape } from '@microsoft/sp-lodash-subset';
-//import { Client } from '@microsoft/microsoft-graph-client';
-//import { WebPartContext } from '@microsoft/sp-webpart-base';
 
 interface IEvent {
   id: string;
@@ -13,10 +11,33 @@ interface IEvent {
   organizer: { emailAddress: { name: string } };
 }
 
-export default class GraphApiDemo2React extends React.Component<IGraphApiDemo2ReactProps, { events: IEvent[] }> {
+interface IUser {
+  id: string;
+  displayName: string;
+  mail: string;
+  jobTitle: string;
+  department: string;
+  officeLocation: string;
+}
+
+interface IGraphApiDemo2ReactState {
+  events: IEvent[];
+  searchEmail: string;
+  searchedUser: IUser | null;
+  isSearching: boolean;
+  searchError: string;
+}
+
+export default class GraphApiDemo2React extends React.Component<IGraphApiDemo2ReactProps, IGraphApiDemo2ReactState> {
   constructor(props: IGraphApiDemo2ReactProps) {
     super(props);
-    this.state = { events: [] };
+    this.state = { 
+      events: [],
+      searchEmail: '',
+      searchedUser: null,
+      isSearching: false,
+      searchError: ''
+    };
   }
 
   public componentDidMount(): void {
@@ -24,21 +45,79 @@ export default class GraphApiDemo2React extends React.Component<IGraphApiDemo2Re
   }
 
   private async _getEvents() {
-    const client = await this.props.context.msGraphClientFactory.getClient('3');
-    const result = await client
-      .api('/me/events')
-      .select('subject,start,end,organizer')
-      .orderby('start/dateTime')
-      .top(10)
-      .get();
+    try {
+      const client = await this.props.context.msGraphClientFactory.getClient('3');
+      const result = await client
+        .api('/me/events')
+        .select('subject,start,end,organizer')
+        .orderby('start/dateTime')
+        .top(10)
+        .get();
 
-    this.setState({ events: result.value });
+      this.setState({ events: result.value });
+    } catch (error) {
+      console.error('Error fetching events:', error);
+    }
+  }
+
+  private async _searchUser() {
+    if (!this.state.searchEmail.trim()) {
+      this.setState({ searchError: 'Please enter an email address' });
+      return;
+    }
+
+    this.setState({ isSearching: true, searchError: '', searchedUser: null });
+
+    try {
+      const client = await this.props.context.msGraphClientFactory.getClient('3');
+      
+      // Search for user by email
+      const result = await client
+        .api('/users')
+        .filter(`mail eq '${this.state.searchEmail}' or userPrincipalName eq '${this.state.searchEmail}'`)
+        .select('id,displayName,mail,jobTitle,department,officeLocation')
+        .get();
+
+      if (result.value && result.value.length > 0) {
+        this.setState({ 
+          searchedUser: result.value[0],
+          isSearching: false,
+          searchError: ''
+        });
+      } else {
+        this.setState({ 
+          searchedUser: null,
+          isSearching: false,
+          searchError: 'User not found'
+        });
+      }
+    } catch (error) {
+      console.error('Error searching user:', error);
+      this.setState({ 
+        isSearching: false,
+        searchError: 'Error searching for user. Please check permissions.'
+      });
+    }
+  }
+
+  private _onEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ searchEmail: event.target.value });
+  }
+
+  private _onSearchClick = () => {
+    this._searchUser();
+  }
+
+  private _onKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      this._searchUser();
+    }
   }
 
   public render(): React.ReactElement<IGraphApiDemo2ReactProps> {
     const {
-      description,
-      isDarkTheme,
+      // description,
+      // isDarkTheme,
       environmentMessage,
       hasTeamsContext,
       userDisplayName
@@ -47,39 +126,68 @@ export default class GraphApiDemo2React extends React.Component<IGraphApiDemo2Re
     return (
       <section className={`${styles.graphApiDemo2React} ${hasTeamsContext ? styles.teams : ''}`}>
         <div className={styles.welcome}>
-          <img alt="" src={isDarkTheme ? require('../assets/welcome-dark.png') : require('../assets/welcome-light.png')} className={styles.welcomeImage} />
-          <h2>Well done, {escape(userDisplayName)}!</h2>
+          <h2>Welcome, {escape(userDisplayName)}!</h2>
           <div>{environmentMessage}</div>
-          <div>Web part property value: <strong>{escape(description)}</strong></div>
         </div>
-        <div>
-          <h3>Welcome to SharePoint Framework!</h3>
-          <p>
-            The SharePoint Framework (SPFx) is a extensibility model for Microsoft Viva, Microsoft Teams and SharePoint. It&#39;s the easiest way to extend Microsoft 365 with automatic Single Sign On, automatic hosting and industry standard tooling.
-          </p>
-          <h4>Learn more about SPFx development:</h4>
-          <ul className={styles.links}>
-            <li><a href="https://aka.ms/spfx" target="_blank" rel="noreferrer">SharePoint Framework Overview</a></li>
-            <li><a href="https://aka.ms/spfx-yeoman-graph" target="_blank" rel="noreferrer">Use Microsoft Graph in your solution</a></li>
-            <li><a href="https://aka.ms/spfx-yeoman-teams" target="_blank" rel="noreferrer">Build for Microsoft Teams using SharePoint Framework</a></li>
-            <li><a href="https://aka.ms/spfx-yeoman-viva" target="_blank" rel="noreferrer">Build for Microsoft Viva Connections using SharePoint Framework</a></li>
-            <li><a href="https://aka.ms/spfx-yeoman-store" target="_blank" rel="noreferrer">Publish SharePoint Framework applications to the marketplace</a></li>
-            <li><a href="https://aka.ms/spfx-yeoman-api" target="_blank" rel="noreferrer">SharePoint Framework API reference</a></li>
-            <li><a href="https://aka.ms/m365pnp" target="_blank" rel="noreferrer">Microsoft 365 Developer Community</a></li>
-          </ul>
-        </div>
-        <div>
+
+        {/* Calendar Events Section */}
+        <div className={styles.section}>
           <h3>Your Upcoming Outlook Events</h3>
-          <ul>
+          <ul className={styles.eventsList}>
             {this.state.events.map(ev => (
-              <li key={ev.id}>
+              <li key={ev.id} className={styles.eventItem}>
                 <strong>{ev.subject || "(No subject)"}</strong><br />
-                {new Date(ev.start.dateTime).toLocaleString()} - {new Date(ev.end.dateTime).toLocaleString()}<br />
-                Organizer: {ev.organizer.emailAddress.name}
+                <span className={styles.eventTime}>
+                  {new Date(ev.start.dateTime).toLocaleString()} - {new Date(ev.end.dateTime).toLocaleString()}
+                </span><br />
+                <span className={styles.organizer}>
+                  Organizer: {ev.organizer.emailAddress.name}
+                </span>
               </li>
             ))}
             {this.state.events.length === 0 && <li>No events found.</li>}
           </ul>
+        </div>
+
+        {/* User Search Section */}
+        <div className={styles.section}>
+          <h3>Search User by Email</h3>
+          <div className={styles.searchContainer}>
+            <input
+              type="email"
+              placeholder="Enter user email address"
+              value={this.state.searchEmail}
+              onChange={this._onEmailChange}
+              onKeyPress={this._onKeyPress}
+              className={styles.searchInput}
+            />
+            <button
+              onClick={this._onSearchClick}
+              disabled={this.state.isSearching}
+              className={styles.searchButton}
+            >
+              {this.state.isSearching ? 'Searching...' : 'Search'}
+            </button>
+          </div>
+
+          {this.state.searchError && (
+            <div className={styles.errorMessage}>
+              {this.state.searchError}
+            </div>
+          )}
+
+          {this.state.searchedUser && (
+            <div className={styles.userCard}>
+              <h4>User Found:</h4>
+              <div className={styles.userInfo}>
+                <div><strong>Name:</strong> {this.state.searchedUser.displayName}</div>
+                <div><strong>Email:</strong> {this.state.searchedUser.mail}</div>
+                <div><strong>Job Title:</strong> {this.state.searchedUser.jobTitle || 'N/A'}</div>
+                <div><strong>Department:</strong> {this.state.searchedUser.department || 'N/A'}</div>
+                <div><strong>Office Location:</strong> {this.state.searchedUser.officeLocation || 'N/A'}</div>
+              </div>
+            </div>
+          )}
         </div>
       </section>
     );

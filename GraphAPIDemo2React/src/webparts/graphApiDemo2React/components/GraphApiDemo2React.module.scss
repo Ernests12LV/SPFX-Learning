@@ -32,3 +32,88 @@
     }
   }
 }
+
+.section {
+  margin: 20px 0;
+  padding: 20px;
+  border: 1px solid #edebe9;
+  border-radius: 4px;
+}
+
+.eventsList {
+  list-style: none;
+  padding: 0;
+}
+
+.eventItem {
+  padding: 10px;
+  margin: 10px 0;
+  background-color: #f3f2f1;
+  border-radius: 4px;
+}
+
+.eventTime {
+  color: #605e5c;
+  font-size: 0.9em;
+}
+
+.organizer {
+  color: #323130;
+  font-size: 0.9em;
+}
+
+.searchContainer {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.searchInput {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #605e5c;
+  border-radius: 2px;
+  font-size: 14px;
+}
+
+.searchButton {
+  padding: 8px 16px;
+  background-color: #0078d4;
+  color: white;
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  font-size: 14px;
+
+  &:hover {
+    background-color: #106ebe;
+  }
+
+  &:disabled {
+    background-color: #a19f9d;
+    cursor: not-allowed;
+  }
+}
+
+.errorMessage {
+  color: #d13438;
+  background-color: #fdf3f4;
+  padding: 8px 12px;
+  border-radius: 2px;
+  margin-bottom: 15px;
+}
+
+.userCard {
+  background-color: #f3f2f1;
+  padding: 15px;
+  border-radius: 4px;
+  border-left: 4px solid #0078d4;
+}
+
+.userInfo {
+  margin-top: 10px;
+
+  div {
+    margin: 5px 0;
+  }
+}
