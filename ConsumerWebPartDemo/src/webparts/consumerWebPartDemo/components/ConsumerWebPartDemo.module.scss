@@ -32,3 +32,74 @@
     }
   }
 }
+
+.consumerContent {
+  margin: 20px 0;
+}
+
+.connected {
+  background-color: #dff6dd;
+  color: #0b5a08;
+  padding: 10px;
+  border-radius: 4px;
+  margin: 15px 0;
+  border-left: 4px solid #107c10;
+}
+
+.disconnected {
+  background-color: #fdf3f4;
+  color: #d13438;
+  padding: 10px;
+  border-radius: 4px;
+  margin: 15px 0;
+  border-left: 4px solid #d13438;
+}
+
+.dataSection {
+  margin: 20px 0;
+  padding: 15px;
+  border: 1px solid #edebe9;
+  border-radius: 4px;
+}
+
+.dataDisplay {
+  background-color: #f3f2f1;
+  padding: 15px;
+  border-radius: 4px;
+
+  div {
+    margin: 8px 0;
+  }
+}
+
+.individualProperties {
+  .propertyItem {
+    margin: 10px 0;
+    padding: 8px;
+    background-color: #fff4ce;
+    border-radius: 4px;
+  }
+}
+
+.noData {
+  color: #605e5c;
+  font-style: italic;
+  padding: 15px;
+  text-align: center;
+}
+
+.instructions {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #e1f5fe;
+  border-radius: 4px;
+
+  ol {
+    margin: 10px 0;
+    padding-left: 20px;
+  }
+
+  li {
+    margin: 5px 0;
+  }
+}

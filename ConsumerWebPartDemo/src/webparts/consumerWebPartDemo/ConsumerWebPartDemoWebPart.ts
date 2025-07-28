@@ -3,17 +3,26 @@ import * as ReactDom from 'react-dom';
 import { Version } from '@microsoft/sp-core-library';
 import {
   type IPropertyPaneConfiguration,
-  PropertyPaneTextField
+  PropertyPaneTextField,
+  PropertyPaneDynamicFieldSet,
+  PropertyPaneDynamicField,
+  DynamicDataSharedDepth
 } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
-import { IReadonlyTheme } from '@microsoft/sp-component-base';
+import { IReadonlyTheme, DynamicProperty } from '@microsoft/sp-component-base';
 
 import * as strings from 'ConsumerWebPartDemoWebPartStrings';
 import ConsumerWebPartDemo from './components/ConsumerWebPartDemo';
 import { IConsumerWebPartDemoProps } from './components/IConsumerWebPartDemoProps';
+import { ISharedData } from './components/ISharedData';
 
 export interface IConsumerWebPartDemoWebPartProps {
   description: string;
+  // Dynamic data properties
+  sharedData: DynamicProperty<ISharedData>;
+  message: DynamicProperty<string>;
+  counter: DynamicProperty<number>;
+  userInfo: DynamicProperty<{ displayName: string; email: string; }>;
 }
 
 export default class ConsumerWebPartDemoWebPart extends BaseClientSideWebPart<IConsumerWebPartDemoWebPartProps> {
@@ -29,7 +38,12 @@ export default class ConsumerWebPartDemoWebPart extends BaseClientSideWebPart<IC
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
-        userDisplayName: this.context.pageContext.user.displayName
+        userDisplayName: this.context.pageContext.user.displayName,
+        // Pass dynamic data properties
+        sharedData: this.properties.sharedData,
+        message: this.properties.message,
+        counter: this.properties.counter,
+        userInfo: this.properties.userInfo
       }
     );
 
@@ -37,37 +51,50 @@ export default class ConsumerWebPartDemoWebPart extends BaseClientSideWebPart<IC
   }
 
   protected onInit(): Promise<void> {
+    // Initialize dynamic properties
+    this.properties.sharedData = new DynamicProperty<ISharedData>(this.context.dynamicDataProvider);
+    this.properties.message = new DynamicProperty<string>(this.context.dynamicDataProvider);
+    this.properties.counter = new DynamicProperty<number>(this.context.dynamicDataProvider);
+    this.properties.userInfo = new DynamicProperty<{ displayName: string; email: string; }>(this.context.dynamicDataProvider);
+
     return this._getEnvironmentMessage().then(message => {
       this._environmentMessage = message;
     });
   }
 
+  protected onPropertyPaneConfigurationStart(): void {
+    // Register for data change notifications
+    this.context.dynamicDataProvider.registerAvailableSourcesChanged(this.render.bind(this));
+  }
 
+  protected onDispose(): void {
+    // Unregister from data change notifications
+    this.context.dynamicDataProvider.unregisterAvailableSourcesChanged(this.render.bind(this));
+    ReactDom.unmountComponentAtNode(this.domElement);
+  }
 
   private _getEnvironmentMessage(): Promise<string> {
-    if (!!this.context.sdks.microsoftTeams) { // running in Teams, office.com or Outlook
+    if (!!this.context.sdks.microsoftTeams) {
       return this.context.sdks.microsoftTeams.teamsJs.app.getContext()
         .then(context => {
           let environmentMessage: string = '';
           switch (context.app.host.name) {
-            case 'Office': // running in Office
+            case 'Office':
               environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentOffice : strings.AppOfficeEnvironment;
               break;
-            case 'Outlook': // running in Outlook
+            case 'Outlook':
               environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentOutlook : strings.AppOutlookEnvironment;
               break;
-            case 'Teams': // running in Teams
+            case 'Teams':
             case 'TeamsModern':
               environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentTeams : strings.AppTeamsTabEnvironment;
               break;
             default:
               environmentMessage = strings.UnknownEnvironment;
           }
-
           return environmentMessage;
         });
     }
-
     return Promise.resolve(this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentSharePoint : strings.AppSharePointEnvironment);
   }
 
@@ -77,20 +104,13 @@ export default class ConsumerWebPartDemoWebPart extends BaseClientSideWebPart<IC
     }
 
     this._isDarkTheme = !!currentTheme.isInverted;
-    const {
-      semanticColors
-    } = currentTheme;
+    const { semanticColors } = currentTheme;
 
     if (semanticColors) {
       this.domElement.style.setProperty('--bodyText', semanticColors.bodyText || null);
       this.domElement.style.setProperty('--link', semanticColors.link || null);
       this.domElement.style.setProperty('--linkHovered', semanticColors.linkHovered || null);
     }
-
-  }
-
-  protected onDispose(): void {
-    ReactDom.unmountComponentAtNode(this.domElement);
   }
 
   protected get dataVersion(): Version {
@@ -110,6 +130,31 @@ export default class ConsumerWebPartDemoWebPart extends BaseClientSideWebPart<IC
               groupFields: [
                 PropertyPaneTextField('description', {
                   label: strings.DescriptionFieldLabel
+                })
+              ]
+            },
+            {
+              groupName: 'Dynamic Data Connection',
+              groupFields: [
+                PropertyPaneDynamicFieldSet({
+                  label: 'Connect to Provider Data',
+                  fields: [
+                    PropertyPaneDynamicField('sharedData', {
+                      label: 'Shared Data (Complete Object)'
+                    }),
+                    PropertyPaneDynamicField('message', {
+                      label: 'Message Only'
+                    }),
+                    PropertyPaneDynamicField('counter', {
+                      label: 'Counter Only'
+                    }),
+                    PropertyPaneDynamicField('userInfo', {
+                      label: 'User Info Only'
+                    })
+                  ],
+                  sharedConfiguration: {
+                    depth: DynamicDataSharedDepth.Property
+                  }
                 })
               ]
             }
