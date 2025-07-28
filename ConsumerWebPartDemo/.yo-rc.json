@@ -1,0 +1,18 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "plusBeta": false,
+    "isCreatingSolution": true,
+    "nodeVersion": "18.20.4",
+    "sdksVersions": {},
+    "version": "1.21.1",
+    "libraryName": "consumer-web-part-demo",
+    "libraryId": "742a1ce4-3fdb-4c99-b0eb-7a796a90b767",
+    "environment": "spo",
+    "packageManager": "npm",
+    "solutionName": "consumer-web-part-demo",
+    "solutionShortDescription": "consumer-web-part-demo description",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "componentType": "webpart"
+  }
+}
